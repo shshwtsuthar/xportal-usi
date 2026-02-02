@@ -1,0 +1,56 @@
+{
+  "profiles": {
+    "httpPort5050": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5050",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "mode": "IssuedToken",
+        "atoSettings:id": "ABRD:27809366375_USIMachine",
+        "usiSettings:code": "VA1803"
+      }
+    },
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "mode": "IssuedToken",
+        "atoSettings:id": "ABRD:27809366375_USIMachine",
+        "usiSettings:code": "VA1803"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "mode": "IssuedToken",
+        "atoSettings:id": "ABRD:27809366375_USIMachine",
+        "usiSettings:code": "VA1803"
+      }
+    },
+    "IssuerBinding": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "mode": "IssuerBinding",
+        "atoSettings:id": "ABRD:27809366375_USIMachine",
+        "usiSettings:code": "VA1803"
+      }
+    }
+  }
+}
