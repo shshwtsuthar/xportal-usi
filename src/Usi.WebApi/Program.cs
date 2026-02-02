@@ -1,6 +1,8 @@
 using Common.Configuration;
 using Common.Keystore;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
+using Usi.WebApi.Auth;
 using UsiClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +51,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+// API key authentication
+builder.Services.AddAuthentication(ApiKeyAuthenticationOptions.DefaultScheme)
+    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationOptions.DefaultScheme, _ => { });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -64,6 +71,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowWebApps");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

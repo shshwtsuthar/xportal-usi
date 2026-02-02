@@ -1,6 +1,8 @@
 using Common.Configuration;
 using Common.ServiceClient;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Usi.WebApi.Auth;
 using Usi.WebApi.Models;
 
 namespace Usi.WebApi.Controllers;
@@ -11,6 +13,7 @@ namespace Usi.WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[Authorize(AuthenticationSchemes = ApiKeyAuthenticationOptions.DefaultScheme)]
 public class UsiController : ControllerBase
 {
     private readonly IUSIService _usiService;

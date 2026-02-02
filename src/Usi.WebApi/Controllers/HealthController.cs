@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Usi.WebApi.Controllers;
 
 /// <summary>
-/// Health check endpoint
+/// Health check endpoint (no API key required for load balancers / Azure).
 /// </summary>
 [ApiController]
 [Route("[controller]")]
+[AllowAnonymous]
 public class HealthController : ControllerBase
 {
     private readonly ILogger<HealthController> _logger;
