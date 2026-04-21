@@ -1,6 +1,7 @@
 using Common.Configuration;
 using Common.Keystore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using Usi.WebApi.Auth;
 using UsiClient;
@@ -69,6 +70,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 app.UseHttpsRedirection();
 app.UseCors("AllowWebApps");
 app.UseAuthentication();
