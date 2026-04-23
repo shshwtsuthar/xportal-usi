@@ -101,14 +101,7 @@ public class UsiController : ControllerBase
                 });
             }
 
-            var result = new VerifyUsiResponse
-            {
-                IsValid = verificationResult.USIStatus == VerificationResponseTypeUSIStatus.Valid,
-                Usi = request.Usi,
-                VerificationStatus = verificationResult.USIStatus.ToString(),
-                Message = null, // VerificationResponseType doesn't contain a Message property
-                RecordId = verificationResult.RecordId
-            };
+            var result = MapVerificationResponse(verificationResult, request.Usi);
 
             _logger.LogInformation("USI verification completed: {Usi} is {Status}", 
                 request.Usi, result.IsValid ? "Valid" : "Invalid");
@@ -188,14 +181,7 @@ public class UsiController : ControllerBase
             var response = await _usiService.BulkVerifyUSIAsync(bulkRequest);
 
             var results = response.BulkVerifyUSIResponse1.VerificationResponses
-                .Select(vr => new VerifyUsiResponse
-                {
-                    IsValid = vr.USIStatus == VerificationResponseTypeUSIStatus.Valid,
-                    Usi = vr.USI ?? string.Empty,
-                    VerificationStatus = vr.USIStatus.ToString(),
-                    Message = null, // VerificationResponseType doesn't contain a Message property
-                    RecordId = vr.RecordId
-                })
+                .Select(vr => MapVerificationResponse(vr, vr.USI ?? string.Empty))
                 .ToList();
 
             var bulkResponse = new BulkVerifyUsiResponse
@@ -220,6 +206,67 @@ public class UsiController : ControllerBase
                 Details = ex.Message
             });
         }
+    }
+
+    private static VerifyUsiResponse MapVerificationResponse(VerificationResponseType vr, string usi)
+    {
+        string? firstNameMatch = null;
+        string? familyNameMatch = null;
+        string? singleNameMatch = null;
+
+        if (vr.Items != null && vr.ItemsElementName != null)
+        {
+            for (var i = 0; i < Math.Min(vr.Items.Length, vr.ItemsElementName.Length); i++)
+            {
+                var matchValue = vr.Items[i].ToString();
+                switch (vr.ItemsElementName[i])
+                {
+                    case ItemsChoiceType2.FirstName:
+                        firstNameMatch = matchValue;
+                        break;
+                    case ItemsChoiceType2.FamilyName:
+                        familyNameMatch = matchValue;
+                        break;
+                    case ItemsChoiceType2.SingleName:
+                        singleNameMatch = matchValue;
+                        break;
+                }
+            }
+        }
+
+        var dateOfBirthMatch = vr.DateOfBirthSpecified ? vr.DateOfBirth.ToString() : null;
+        var usiIsActive = vr.USIStatus == VerificationResponseTypeUSIStatus.Valid;
+
+        var allFieldsMatch =
+            (firstNameMatch == null || firstNameMatch == nameof(MatchResultType.Match)) &&
+            (familyNameMatch == null || familyNameMatch == nameof(MatchResultType.Match)) &&
+            (singleNameMatch == null || singleNameMatch == nameof(MatchResultType.Match)) &&
+            (dateOfBirthMatch == null || dateOfBirthMatch == nameof(MatchResultType.Match));
+
+        var isValid = usiIsActive && allFieldsMatch;
+
+        var verificationStatus = vr.USIStatus switch
+        {
+            VerificationResponseTypeUSIStatus.Invalid => "USI not found",
+            VerificationResponseTypeUSIStatus.Deactivated => "USI deactivated",
+            VerificationResponseTypeUSIStatus.Valid when !allFieldsMatch => "Details do not match",
+            VerificationResponseTypeUSIStatus.Valid => "Match",
+            _ => vr.USIStatus.ToString()
+        };
+
+        return new VerifyUsiResponse
+        {
+            IsValid = isValid,
+            Usi = usi,
+            UsiStatus = vr.USIStatus.ToString(),
+            FirstNameMatch = firstNameMatch,
+            FamilyNameMatch = familyNameMatch,
+            SingleNameMatch = singleNameMatch,
+            DateOfBirthMatch = dateOfBirthMatch,
+            VerificationStatus = verificationStatus,
+            Message = null,
+            RecordId = vr.RecordId
+        };
     }
 
     /// <summary>

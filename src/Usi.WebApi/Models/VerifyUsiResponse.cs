@@ -6,7 +6,7 @@ namespace Usi.WebApi.Models;
 public class VerifyUsiResponse
 {
     /// <summary>
-    /// Indicates whether the USI is valid
+    /// True only when the USI is active AND all provided personal details match
     /// </summary>
     public bool IsValid { get; set; }
 
@@ -16,7 +16,32 @@ public class VerifyUsiResponse
     public string Usi { get; set; } = string.Empty;
 
     /// <summary>
-    /// Verification status from the service
+    /// Raw USI status from the registry (Valid / Invalid / Deactivated)
+    /// </summary>
+    public string? UsiStatus { get; set; }
+
+    /// <summary>
+    /// Whether the provided first name matched the registry record (Match / NoMatch / null if not supplied)
+    /// </summary>
+    public string? FirstNameMatch { get; set; }
+
+    /// <summary>
+    /// Whether the provided family name matched the registry record (Match / NoMatch / null if not supplied)
+    /// </summary>
+    public string? FamilyNameMatch { get; set; }
+
+    /// <summary>
+    /// Whether the provided single name matched the registry record (Match / NoMatch / null if not supplied)
+    /// </summary>
+    public string? SingleNameMatch { get; set; }
+
+    /// <summary>
+    /// Whether the provided date of birth matched the registry record (Match / NoMatch / null if not returned)
+    /// </summary>
+    public string? DateOfBirthMatch { get; set; }
+
+    /// <summary>
+    /// Human-readable summary of the overall verification outcome
     /// </summary>
     public string? VerificationStatus { get; set; }
 
